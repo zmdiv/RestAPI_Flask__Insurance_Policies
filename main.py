@@ -44,16 +44,27 @@ class Users(Resource):
 
     def delete(self):
         parser = reqparse.RequestParser()
-        parser.add_argument()
+        parser.add_argument('user_id', required = True, type=int)
+        args = parser.parse_args()
+        data = pd.read_csv('policies.csv')
+
+        if args['user_id'] in data['user_id']:
+            data = data[data['user_id']] != args['user_id']
+            data.to_csv('user_path', index=False)
+            return {'data': data.to_ct()}, 200
+        else:
+            return {
+                'message': 'entered Id does not exist'
+            }, 404
 
 
-class Locations(Resource):
-    # methods go here
-    pass
+
+
+
 
 
 api.add_resource(Users, '/users')  # '/users' is our entry point for Users
-api.add_resource(Locations, '/locations')  # and '/locations' is our entry point for Locations
+
 
 if __name__ == '__main__':
     app.run()
